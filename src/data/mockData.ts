@@ -270,9 +270,9 @@ At Wouhouch Hub, we believe that fitness is not just about building muscle – i
     'First Aid & CPR Certified'
   ],
   stats: {
-    clientsTransformed: '500+',
-    yearsExperience: '10+',
-    eventsHosted: '50+',
-    satisfactionRate: '98%'
+    clientsTransformed: '100+',
+    yearsExperience: '5+',
+    eventsHosted: '10+',
+    satisfactionRate: '90%'
   }
 };

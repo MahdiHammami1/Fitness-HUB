@@ -1,12 +1,34 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/component/ui/button';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
-import { products } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { apiGet } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
+import type { Product } from '@/types';
 
 export const ProductsPreview = () => {
   const { addItem } = useCart();
-  const featuredProducts = products.slice(0, 6);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await apiGet('/products');
+        let productList: Product[] = Array.isArray(res) ? res : res?.content || [];
+        setProducts(productList.slice(0, 6));
+      } catch (err) {
+        console.error('Failed to fetch products', err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const featuredProducts = products;
 
   return (
     <section className="section-padding bg-card">
@@ -21,13 +43,30 @@ export const ProductsPreview = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {featuredProducts.map((product) => (
+          {loading ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-muted-foreground">Loading products...</p>
+            </div>
+          ) : featuredProducts.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-muted-foreground">No products available.</p>
+            </div>
+          ) : (
+            featuredProducts.map((product) => (
             <div key={product.id} className="group">
               <Link to={`/shop/${product.id}`}>
                 <div className="aspect-square rounded-xl bg-gradient-to-br from-secondary to-muted relative overflow-hidden mb-4 card-hover">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
-                  </div>
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[0].url}
+                      alt={product.images[0].altText || product.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
+                    </div>
+                  )}
                   <div className="absolute top-3 left-3">
                     <span className="px-2 py-1 rounded-full bg-background/80 text-xs font-medium text-muted-foreground">
                       {product.collection === 'SUPPLEMENTS_GEAR' ? 'Supplements' : 'Apparel'}
@@ -55,7 +94,8 @@ export const ProductsPreview = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
 
         <div className="text-center mt-10">

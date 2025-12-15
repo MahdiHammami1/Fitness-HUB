@@ -26,7 +26,7 @@ export const CTASection = () => {
               </Button>
             </Link>
             <a
-              href="https://wa.me/212600000000"
+              href="https://wa.me/21623630102"
               target="_blank"
               rel="noopener noreferrer"
             >

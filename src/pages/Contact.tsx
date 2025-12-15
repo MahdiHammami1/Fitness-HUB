@@ -5,6 +5,9 @@ import { Input } from '@/component/ui/input';
 import { Textarea } from '@/component/ui/textarea';
 import { Mail, MessageCircle, Instagram, MapPin, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -14,16 +17,33 @@ const Contact = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { settings } = useSiteSettings();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success('Message sent! We\'ll get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setIsSubmitting(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -53,7 +73,7 @@ const Contact = () => {
 
               <div className="space-y-6 mb-10">
                 <a
-                  href="https://wa.me/212600000000"
+                  href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors group"
@@ -63,12 +83,12 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground">WhatsApp</h3>
-                    <p className="text-sm text-muted-foreground">Quick responses, personal support</p>
+                    <p className="text-sm text-muted-foreground">{settings.whatsappNumber}</p>
                   </div>
                 </a>
 
                 <a
-                  href="https://instagram.com"
+                  href={`https://instagram.com/${settings.instagramHandle.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors group"
@@ -78,12 +98,12 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground">Instagram</h3>
-                    <p className="text-sm text-muted-foreground">@wouhouch_hub</p>
+                    <p className="text-sm text-muted-foreground">{settings.instagramHandle}</p>
                   </div>
                 </a>
 
                 <a
-                  href="mailto:contact@wouhouch.com"
+                  href={`mailto:${settings.contactEmail}`}
                   className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors group"
                 >
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -91,7 +111,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground">Email</h3>
-                    <p className="text-sm text-muted-foreground">contact@wouhouch.com</p>
+                    <p className="text-sm text-muted-foreground">{settings.contactEmail}</p>
                   </div>
                 </a>
 
@@ -101,7 +121,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground">Location</h3>
-                    <p className="text-sm text-muted-foreground">Casablanca, Morocco</p>
+                    <p className="text-sm text-muted-foreground">ariana, Tunisia</p>
                   </div>
                 </div>
               </div>
@@ -115,11 +135,11 @@ const Contact = () => {
                   </li>
                   <li className="flex justify-between">
                     <span>Saturday</span>
-                    <span className="text-foreground">8:00 AM - 8:00 PM</span>
+                    <span className="text-foreground">8:00 AM - 6:00 PM</span>
                   </li>
                   <li className="flex justify-between">
                     <span>Sunday</span>
-                    <span className="text-foreground">10:00 AM - 6:00 PM</span>
+                    <span className="text-foreground">8:00 AM - 6:00 PM</span>
                   </li>
                 </ul>
               </div>

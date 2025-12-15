@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, Mail, MapPin } from 'lucide-react';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 export const Footer = () => {
+  const { settings } = useSiteSettings();
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container-tight px-4 py-12 md:py-16">
@@ -10,7 +13,7 @@ export const Footer = () => {
           <div className="md:col-span-2">
             <Link to="/" className="inline-block mb-4">
               <span className="font-display text-3xl text-foreground tracking-wider">
-                WOUHOUCH<span className="text-primary">HUB</span>
+                {settings.siteName.split('HUB')[0]}HUB<span className="text-primary">{settings.siteName.includes('HUB') ? '' : settings.siteName}</span>
               </span>
             </Link>
             <p className="text-muted-foreground mb-6 max-w-sm">
@@ -18,7 +21,7 @@ export const Footer = () => {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://instagram.com"
+                href={`https://instagram.com/${settings.instagramHandle.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-secondary hover:bg-primary transition-colors"
@@ -27,7 +30,7 @@ export const Footer = () => {
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://wa.me/212600000000"
+                href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-secondary hover:bg-primary transition-colors"
@@ -36,7 +39,7 @@ export const Footer = () => {
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a
-                href="mailto:contact@wouhouch.com"
+                href={`mailto:${settings.contactEmail}`}
                 className="p-2 rounded-full bg-secondary hover:bg-primary transition-colors"
                 aria-label="Email"
               >
@@ -83,17 +86,17 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-muted-foreground">
                 <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                <span>Casablanca, Morocco</span>
+                <span>Ariana, Tunisia</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-5 w-5 flex-shrink-0" />
-                <a href="mailto:contact@wouhouch.com" className="hover:text-primary transition-colors">
-                  contact@wouhouch.com
+                <a href="mailto:wouhouchteam@gmail.com" className="hover:text-primary transition-colors">
+                  wouhouchteam@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <MessageCircle className="h-5 w-5 flex-shrink-0" />
-                <a href="https://wa.me/212600000000" className="hover:text-primary transition-colors">
+                <a href="https://wa.me/21626630102" className="hover:text-primary transition-colors">
                   WhatsApp
                 </a>
               </li>

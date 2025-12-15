@@ -1,18 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/component/layout/Layout';
 import { Button } from '@/component/ui/button';
 import { ShoppingBag, Filter } from 'lucide-react';
-import { products } from '@/data/mockData';
+import { apiGet } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
-import { ProductCollection } from '@/types';
+import { Product, ProductCollection } from '@/types';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type FilterType = 'all' | ProductCollection;
 
 const Shop = () => {
   const [filter, setFilter] = useState<FilterType>('all');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await apiGet('/products');
+        let list: any[] = [];
+        if (Array.isArray(res)) list = res;
+        else if (res && res.content) list = res.content;
+        setProducts(list as Product[]);
+      } catch (err) {
+        console.error('Failed to load products', err);
+        toast.error('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const filteredProducts = products.filter(product => {
     if (filter === 'all') return true;
@@ -71,14 +93,34 @@ const Shop = () => {
       {/* Products Grid */}
       <section className="section-padding bg-background">
         <div className="container-tight px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {loading ? (
+            <div className="text-center py-16">
+              <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+              <h2 className="font-display text-2xl text-foreground mb-2">Loading products...</h2>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-16">
+              <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+              <h2 className="font-display text-2xl text-foreground mb-2">No Products Found</h2>
+              <p className="text-muted-foreground">Try adjusting your filter.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {filteredProducts.map((product) => (
               <div key={product.id} className="group">
                 <Link to={`/shop/${product.id}`}>
                   <div className="aspect-square rounded-xl bg-gradient-to-br from-secondary to-muted relative overflow-hidden mb-4 card-hover">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
-                    </div>
+                    {product.images && product.images.length > 0 ? (
+                      <img
+                        src={product.images[0].url}
+                        alt={product.images[0].altText || product.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
+                      </div>
+                    )}
                     
                     <div className="absolute top-3 left-3">
                       <span className="px-2 py-1 rounded-full bg-background/80 text-xs font-medium text-muted-foreground">
@@ -134,13 +176,6 @@ const Shop = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-16">
-              <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-              <h2 className="font-display text-2xl text-foreground mb-2">No Products Found</h2>
-              <p className="text-muted-foreground">Try adjusting your filter.</p>
             </div>
           )}
         </div>

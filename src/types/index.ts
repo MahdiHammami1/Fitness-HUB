@@ -38,13 +38,17 @@ export interface Event {
   title: string;
   description: string;
   startAt: Date;
+  endAt?: Date;
   location: string;
   capacity: number;
-  currentRegistrations: number;
+  registrationsCount: number;
   price: number;
   isFree: boolean;
-  coverImage: string;
+  coverImageUrl: string;
+  images?: string[];
   status: 'upcoming' | 'ongoing' | 'past' | 'cancelled';
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface EventRegistration {
@@ -60,6 +64,13 @@ export interface EventRegistration {
 
 export type ProductCollection = 'SUPPLEMENTS_GEAR' | 'APPAREL';
 
+export interface ProductImage {
+  url: string;
+  altText: string;
+  title?: string;
+  position?: number;
+}
+
 export interface ProductVariant {
   id: string;
   productId: string;
@@ -74,16 +85,16 @@ export interface Product {
   description: string;
   price: number;
   collection: ProductCollection;
-  images: string[];
-  stock: number;
+  images: ProductImage[];
+  hasVariants: boolean;
+  stock?: number;
   isActive: boolean;
   variants?: ProductVariant[];
-  ingredients?: string;
-  usage?: string;
-  warnings?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export type OrderStatus = 'pending' | 'paid' | 'prepared' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'PENDING' | 'PAID' | 'PREPARED' | 'DELIVERED' | 'CANCELLED';
 
 export interface OrderItem {
   id: string;

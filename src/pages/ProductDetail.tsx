@@ -1,23 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/component/layout/Layout';
 import { Button } from '@/component/ui/button';
 import { ArrowLeft, ShoppingBag, Minus, Plus, AlertTriangle, Info } from 'lucide-react';
-import { products } from '@/data/mockData';
+import { apiGet } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
-import { ProductVariant } from '@/types';
+import { Product, ProductVariant } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find(p => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { addItem } = useCart();
   
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
-    product?.variants?.[0]
-  );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const res = await apiGet(`/products/${id}`);
+        if (res) {
+          setProduct(res as Product);
+          setSelectedVariant(res.variants?.[0]);
+        }
+      } catch (err) {
+        console.error('Failed to load product', err);
+        toast.error('Failed to load product');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="section-padding text-center">
+          <h1 className="font-display text-4xl text-foreground mb-4">Loading product...</h1>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (
@@ -67,24 +97,39 @@ const ProductDetail = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Images */}
             <div>
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-secondary to-muted flex items-center justify-center">
-                <ShoppingBag className="h-24 w-24 text-muted-foreground/30" />
+              <div className="aspect-square rounded-2xl bg-gradient-to-br from-secondary to-muted flex items-center justify-center overflow-hidden">
+                {product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[selectedImageIndex].url}
+                    alt={product.images[selectedImageIndex].altText || product.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <ShoppingBag className="h-24 w-24 text-muted-foreground/30" />
+                )}
               </div>
               
-              {/* Thumbnail strip placeholder */}
-              <div className="flex gap-4 mt-4">
-                {[1, 2, 3].map((i) => (
-                  <div 
-                    key={i} 
-                    className={cn(
-                      "w-20 h-20 rounded-lg bg-card border-2 flex items-center justify-center cursor-pointer transition-colors",
-                      i === 1 ? "border-primary" : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <ShoppingBag className="h-6 w-6 text-muted-foreground/30" />
-                  </div>
-                ))}
-              </div>
+              {/* Thumbnail strip */}
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-4 mt-4">
+                  {product.images.map((image, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImageIndex(idx)}
+                      className={cn(
+                        "w-20 h-20 rounded-lg bg-card border-2 flex items-center justify-center cursor-pointer transition-colors overflow-hidden",
+                        selectedImageIndex === idx ? "border-primary" : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.altText}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Product Info */}
@@ -173,41 +218,6 @@ const ProductDetail = () => {
               >
                 {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
               </Button>
-
-              {/* Product Details */}
-              {(product.ingredients || product.usage || product.warnings) && (
-                <div className="space-y-4 pt-8 border-t border-border">
-                  {product.ingredients && (
-                    <div>
-                      <h3 className="flex items-center gap-2 font-medium text-foreground mb-2">
-                        <Info className="h-4 w-4 text-primary" />
-                        Ingredients
-                      </h3>
-                      <p className="text-sm text-muted-foreground">{product.ingredients}</p>
-                    </div>
-                  )}
-
-                  {product.usage && (
-                    <div>
-                      <h3 className="flex items-center gap-2 font-medium text-foreground mb-2">
-                        <Info className="h-4 w-4 text-primary" />
-                        Usage
-                      </h3>
-                      <p className="text-sm text-muted-foreground">{product.usage}</p>
-                    </div>
-                  )}
-
-                  {product.warnings && (
-                    <div>
-                      <h3 className="flex items-center gap-2 font-medium text-foreground mb-2">
-                        <AlertTriangle className="h-4 w-4 text-primary" />
-                        Warnings
-                      </h3>
-                      <p className="text-sm text-muted-foreground">{product.warnings}</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>

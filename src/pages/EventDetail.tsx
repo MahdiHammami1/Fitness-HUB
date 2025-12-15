@@ -1,17 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/component/layout/Layout';
 import { Button } from '@/component/ui/button';
 import { Input } from '@/component/ui/input';
 import { Checkbox } from '@/component/ui/checkbox';
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Download } from 'lucide-react';
-import { events } from '@/data/mockData';
+import { apiGet, apiPost } from '@/lib/api';
+import { Event as EventType } from '@/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 const EventDetail = () => {
   const { id } = useParams();
-  const event = events.find(e => e.id === id);
+  const [event, setEvent] = useState<EventType | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -22,6 +24,42 @@ const EventDetail = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchEvent = async () => {
+      setLoading(true);
+      try {
+        const res = await apiGet(`/events/${id}`);
+        if (res) {
+          const startAt = res.startAt ? new Date(res.startAt) : new Date();
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const eventDate = new Date(startAt);
+          eventDate.setHours(0, 0, 0, 0);
+          const status = eventDate >= today ? 'upcoming' : 'past';
+          
+          const e = { ...res, startAt, status } as EventType;
+          setEvent(e);
+        }
+      } catch (err) {
+        console.error('Failed to load event', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvent();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="section-padding text-center">
+          <h1 className="font-display text-4xl text-foreground mb-4">Loading event...</h1>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!event) {
     return (
@@ -39,7 +77,7 @@ const EventDetail = () => {
     );
   }
 
-  const isFull = event.currentRegistrations >= event.capacity;
+  const isFull = event.registrationsCount >= event.capacity;
   const isPast = event.status === 'past';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,13 +89,24 @@ const EventDetail = () => {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate registration
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsRegistered(true);
-    toast.success('Registration successful! Check your email for confirmation.');
-    setIsSubmitting(false);
+    try {
+      if (!id) throw new Error('Missing event id');
+      const body = {
+        eventId: id,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        emergencyContact: formData.emergencyContact,
+      };
+      await apiPost(`/event-registrations`, body);
+      setIsRegistered(true);
+      toast.success('Registration successful! Check your email for confirmation.');
+    } catch (err: any) {
+      console.error('Registration failed', err);
+      toast.error(err?.message || 'Registration failed');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const generateCalendarLink = () => {
@@ -132,7 +181,7 @@ END:VCALENDAR`;
                   <Users className="h-5 w-5 text-primary mb-2" />
                   <p className="text-sm text-muted-foreground">Spots</p>
                   <p className="font-medium text-foreground">
-                    {event.currentRegistrations}/{event.capacity}
+                    {event.registrationsCount}/{event.capacity}
                   </p>
                 </div>
               </div>
@@ -145,13 +194,27 @@ END:VCALENDAR`;
               {isPast && (
                 <div className="mt-12">
                   <h2 className="font-display text-2xl text-foreground mb-6">Event Gallery</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <div key={i} className="aspect-square rounded-lg bg-card border border-border flex items-center justify-center">
-                        <span className="text-muted-foreground/30">Photo {i}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {event.images && event.images.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {event.images.map((image, index) => (
+                        <div key={index} className="aspect-square rounded-lg overflow-hidden bg-card border border-border">
+                          <img
+                            src={image}
+                            alt={`Event gallery ${index + 1}`}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="aspect-square rounded-lg bg-card border border-border flex items-center justify-center">
+                          <span className="text-muted-foreground/30">No photos</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -200,7 +263,7 @@ END:VCALENDAR`;
                       )}
                       <h3 className="font-display text-xl text-foreground mt-2">Register Now</h3>
                       <p className="text-sm text-muted-foreground">
-                        {event.capacity - event.currentRegistrations} spots remaining
+                        {event.capacity - event.registrationsCount} spots remaining
                       </p>
                     </div>
 

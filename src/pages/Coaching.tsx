@@ -7,6 +7,9 @@ import { Check, Award, MessageCircle, Instagram, ArrowRight } from 'lucide-react
 import { coachingOffers, coachProfile, testimonials } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import yassine_saidani from '@/assets/yassine_saidani.jpeg';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 const Coaching = () => {
   const [formData, setFormData] = useState({
@@ -21,12 +24,33 @@ const Coaching = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success('Thank you! We will contact you shortly.');
-    setFormData({ name: '', email: '', phone: '', message: '' });
-    setIsSubmitting(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: 'Coaching Inquiry',
+          message: formData.message,
+          phone: formData.phone,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      toast.success('Thank you! Coach Yassine will contact you within 24 hours.');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -49,8 +73,12 @@ const Coaching = () => {
       <section className="section-padding bg-card">
         <div className="container-tight px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center">
-              <span className="font-display text-6xl text-primary/30">YS</span>
+            <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center overflow-hidden">
+              <img 
+                src={yassine_saidani} 
+                alt="Yassine Saidani" 
+                className="w-full h-full object-cover"
+              />
             </div>
             
             <div>
@@ -239,7 +267,7 @@ const Coaching = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="+212 600 000 000"
+                  placeholder="+216 23 630 102"
                 />
               </div>
 
@@ -265,7 +293,7 @@ const Coaching = () => {
 
             <div className="flex justify-center gap-4 mt-8">
               <a
-                href="https://wa.me/212600000000"
+                href="https://wa.me/21623630102"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
@@ -274,7 +302,7 @@ const Coaching = () => {
                 WhatsApp
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/wouhouch_events/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"

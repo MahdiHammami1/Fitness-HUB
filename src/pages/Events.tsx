@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/component/layout/Layout';
 import { Button } from '@/component/ui/button';
 import { Calendar, MapPin, Users, ArrowRight, Filter } from 'lucide-react';
-import { events } from '@/data/mockData';
+import { apiGet } from '@/lib/api';
+import { Event as EventType } from '@/types';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +14,44 @@ type StatusFilter = 'upcoming' | 'past';
 const Events = () => {
   const [priceFilter, setPriceFilter] = useState<FilterType>('all');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('upcoming');
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const res = await apiGet('/events');
+        let list: any[] = [];
+        if (Array.isArray(res)) list = res;
+        else if (res && res.content) list = res.content;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const normalized = list.map((e: any) => {
+          const startAt = e.startAt ? new Date(e.startAt) : new Date();
+          const eventDate = new Date(startAt);
+          eventDate.setHours(0, 0, 0, 0);
+          
+          // Classify as upcoming if startAt is today or in the future, past if before today
+          const status = eventDate >= today ? 'upcoming' : 'past';
+          
+          return {
+            ...e,
+            startAt,
+            status,
+          };
+        }) as EventType[];
+        setEvents(normalized);
+      } catch (err) {
+        console.error('Failed to load events', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const filteredEvents = events.filter(event => {
     if (statusFilter === 'upcoming' && event.status !== 'upcoming') return false;
@@ -95,7 +134,12 @@ const Events = () => {
       {/* Events List */}
       <section className="section-padding bg-background">
         <div className="container-tight px-4">
-          {filteredEvents.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-16">
+              <Calendar className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+              <h2 className="font-display text-2xl text-foreground mb-2">Loading events...</h2>
+            </div>
+          ) : filteredEvents.length === 0 ? (
             <div className="text-center py-16">
               <Calendar className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
               <h2 className="font-display text-2xl text-foreground mb-2">No Events Found</h2>
@@ -117,10 +161,18 @@ const Events = () => {
                 >
                   <div className="grid md:grid-cols-3 gap-6">
                     {/* Image */}
-                    <div className="aspect-video md:aspect-auto bg-gradient-to-br from-primary/20 to-secondary relative">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Calendar className="h-12 w-12 text-primary/50" />
-                      </div>
+                    <div className="aspect-video md:aspect-auto bg-gradient-to-br from-primary/20 to-secondary relative overflow-hidden">
+                      {event.coverImageUrl ? (
+                        <img 
+                          src={event.coverImageUrl} 
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Calendar className="h-12 w-12 text-primary/50" />
+                        </div>
+                      )}
                       {event.isFree && event.status === 'upcoming' && (
                         <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold uppercase">
                           Free
@@ -152,14 +204,32 @@ const Events = () => {
                           <MapPin className="h-4 w-4 text-primary" />
                           <span className="truncate">{event.location}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Users className="h-4 w-4 text-primary" />
-                          <span>
-                            {event.currentRegistrations}/{event.capacity} spots
-                            {event.currentRegistrations >= event.capacity && (
-                              <span className="text-primary ml-1">(Full)</span>
-                            )}
-                          </span>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="h-4 w-4 text-primary" />
+                            <span>
+                              {event.registrationsCount}/{event.capacity} spots
+                              {event.registrationsCount >= event.capacity && (
+                                <span className="text-primary ml-1 font-semibold">(Full)</span>
+                              )}
+                            </span>
+                          </div>
+                          {/* Registration Progress Bar */}
+                          <div className="w-full bg-border rounded-full h-2">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all",
+                                event.registrationsCount >= event.capacity 
+                                  ? "bg-secondary" 
+                                  : event.registrationsCount >= event.capacity * 0.8
+                                  ? "bg-orange-500"
+                                  : "bg-primary"
+                              )}
+                              style={{
+                                width: `${Math.min((event.registrationsCount / event.capacity) * 100, 100)}%`
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -173,11 +243,11 @@ const Events = () => {
                         {event.status === 'upcoming' && (
                           <Link to={`/events/${event.id}`}>
                             <Button 
-                              variant={event.currentRegistrations >= event.capacity ? 'secondary' : 'default'}
-                              disabled={event.currentRegistrations >= event.capacity}
+                              variant={event.registrationsCount >= event.capacity ? 'secondary' : 'default'}
+                              disabled={event.registrationsCount >= event.capacity}
                               className="group/btn"
                             >
-                              {event.currentRegistrations >= event.capacity ? 'Sold Out' : 'Register Now'}
+                              {event.registrationsCount >= event.capacity ? 'Sold Out' : 'Register Now'}
                               <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                             </Button>
                           </Link>

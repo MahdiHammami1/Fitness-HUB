@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/component/ui/button';
 import { ArrowRight, Dumbbell, Calendar, ShoppingBag } from 'lucide-react';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 export const HeroSection = () => {
+  const { settings } = useSiteSettings();
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
@@ -26,15 +29,14 @@ export const HeroSection = () => {
 
           {/* Main heading */}
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-foreground mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            PUSH YOUR
+            {settings.heroTitle.split(' ')[0]}
             <br />
-            <span className="text-primary">LIMITS</span>
+            <span className="text-primary">{settings.heroTitle.split(' ').slice(1).join(' ')}</span>
           </h1>
 
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            Expert coaching, powerful events, and premium gear. 
-            Join Coach Yassine Saidani and the Wouhouch community to unlock your full potential.
+            {settings.heroSubtitle}
           </p>
 
           {/* CTA Buttons */}

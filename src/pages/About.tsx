@@ -1,6 +1,8 @@
 import { Layout } from '@/component/layout/Layout';
 import { coachProfile } from '@/data/mockData';
 import { Target, Heart, Zap, Users } from 'lucide-react';
+import wouhouchTeamLogo from '@/assets/wouhouch_team_clarified_4x.png';
+import yassine_saidani from '@/assets/yassine_saidani.jpeg';
 
 const values = [
   {
@@ -36,7 +38,7 @@ const About = () => {
               OUR <span className="text-primary">STORY</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              From a small gym in Casablanca to a movement that's transforming lives across Morocco.
+               A movement that's transforming lives across Tunisia.
             </p>
           </div>
         </div>
@@ -47,7 +49,8 @@ const About = () => {
         <div className="container-tight px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="aspect-video md:aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center">
-              <span className="font-display text-8xl text-primary/20">W</span>
+                 <img src={wouhouchTeamLogo}  />
+
             </div>
             
             <div>
@@ -55,7 +58,7 @@ const About = () => {
                 THE <span className="text-primary">MISSION</span>
               </h2>
               <p className="text-muted-foreground mb-6">
-                Wouhouch Hub was born from a simple belief: everyone deserves access to world-class fitness coaching. What started as Coach Yassine's passion project has grown into a comprehensive platform for transformation.
+                Wouhouch Hub was born from a simple belief: everyone deserves access to world-class fitness coaching, best products and memories. What started as Coach Yassine's passion project has grown into a comprehensive platform for transformation.
               </p>
               <p className="text-muted-foreground mb-6">
                 We combine proven training methodologies with genuine care for every individual who walks through our doors—physical or digital. Whether you're joining a live event, following our online programs, or wearing our gear, you're part of a family committed to excellence.
@@ -116,8 +119,12 @@ const About = () => {
         <div className="container-tight px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-3 gap-8 items-start">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center">
-                <span className="font-display text-4xl text-primary/30">YS</span>
+              <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center overflow-hidden">
+                <img 
+                  src={yassine_saidani} 
+                  alt="Yassine Saidani" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               <div className="md:col-span-2">

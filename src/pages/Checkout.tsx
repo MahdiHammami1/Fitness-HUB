@@ -6,6 +6,7 @@ import { Input } from '@/component/ui/input';
 import { Textarea } from '@/component/ui/textarea';
 import { ShoppingBag, ArrowLeft, CreditCard, Truck, CheckCircle } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { apiPost } from '@/lib/api';
 import { toast } from 'sonner';
 
 const Checkout = () => {
@@ -34,15 +35,39 @@ const Checkout = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate order processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const newOrderId = `WH-${Date.now().toString(36).toUpperCase()}`;
-    setOrderId(newOrderId);
-    setOrderComplete(true);
-    clearCart();
-    toast.success('Order placed successfully!');
-    setIsSubmitting(false);
+    try {
+      const orderPayload = {
+        customerName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: {
+          street: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+        },
+        items: items.map(item => ({
+          productId: item.product.id,
+          variantId: item.variant?.id,
+          qty: item.qty,
+          unitPrice: item.product.price,
+        })),
+        total: total,
+      };
+      
+      const response = await apiPost('/orders', orderPayload);
+      
+      if (response && response.id) {
+        setOrderId(response.id);
+        setOrderComplete(true);
+        clearCart();
+        toast.success('Order placed successfully!');
+      }
+    } catch (err: any) {
+      console.error('Order submission failed', err);
+      toast.error(err?.message || 'Failed to place order');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (orderComplete) {

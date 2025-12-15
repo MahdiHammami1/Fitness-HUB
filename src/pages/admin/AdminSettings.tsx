@@ -1,21 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/component/ui/button';
 import { Input } from '@/component/ui/input';
 import { Textarea } from '@/component/ui/textarea';
 import { toast } from 'sonner';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 export const AdminSettings = () => {
-  const [settings, setSettings] = useState({
-    siteName: 'Wouhouch Hub',
-    heroTitle: 'PUSH YOUR LIMITS',
-    heroSubtitle: 'Expert coaching, powerful events, and premium gear.',
-    contactEmail: 'contact@wouhouch.com',
-    whatsappNumber: '+212 600 000 000',
-    instagramHandle: '@wouhouch_hub'
-  });
+  const { settings: contextSettings, updateSettings } = useSiteSettings();
+  const [settings, setSettings] = useState(contextSettings);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    toast.success('Settings saved successfully');
+  useEffect(() => {
+    setSettings(contextSettings);
+  }, [contextSettings]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Update the global context
+      updateSettings(settings);
+      toast.success('Settings saved successfully');
+    } catch (err: any) {
+      console.error('Failed to save settings', err);
+      toast.error(err?.message || 'Failed to save settings');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -102,8 +112,8 @@ export const AdminSettings = () => {
           </div>
         </div>
 
-        <Button onClick={handleSave} size="lg">
-          Save Changes
+        <Button onClick={handleSave} size="lg" disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
     </div>

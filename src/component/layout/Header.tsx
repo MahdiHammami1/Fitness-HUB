@@ -4,6 +4,7 @@ import { Menu, X, ShoppingCart, User, LogOut } from 'lucide-react';
 import { Button } from '@/component/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useUser } from '@/context/UserContext';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { useLogout } from '@/hooks/use-logout';
 import { isAuthenticated } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ export const Header = () => {
   const { itemCount } = useCart();
   const { logout } = useLogout();
   const { isAdmin } = useUser();
+  const { settings } = useSiteSettings();
   const authenticated = isAuthenticated();
 
   return (
@@ -32,7 +34,7 @@ export const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <span className="font-display text-2xl md:text-3xl text-foreground tracking-wider">
-              WOUHOUCH<span className="text-primary">HUB</span>
+              {settings.siteName.split(' ')[0]}<span className="text-primary">{settings.siteName.includes(' ') ? ' ' + settings.siteName.split(' ')[1] : ''}</span>
             </span>
           </Link>
 
