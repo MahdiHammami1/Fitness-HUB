@@ -73,23 +73,23 @@ const Checkout = () => {
   if (orderComplete) {
     return (
       <Layout>
-        <section className="section-padding bg-background">
-          <div className="container-tight px-4">
-            <div className="max-w-lg mx-auto text-center py-16">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-12 w-12 text-primary" />
+        <section className="section-padding bg-background pt-20 sm:pt-24 md:pt-32">
+          <div className="container-tight px-3 sm:px-4">
+            <div className="max-w-lg mx-auto text-center py-12 sm:py-16">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 text-primary" />
               </div>
-              <h1 className="font-display text-4xl text-foreground mb-4">Order Confirmed!</h1>
-              <p className="text-muted-foreground mb-2">
+              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-3 sm:mb-4">Order Confirmed!</h1>
+              <p className="text-sm sm:text-base text-muted-foreground mb-2">
                 Thank you for your order. We've sent a confirmation to your email.
               </p>
-              <p className="text-lg font-medium text-primary mb-8">
+              <p className="text-lg sm:text-xl font-medium text-primary mb-6 sm:mb-8">
                 Order ID: {orderId}
               </p>
 
-              <div className="p-6 rounded-xl bg-card border border-border text-left mb-8">
-                <h3 className="font-display text-lg text-foreground mb-4">What happens next?</h3>
-                <ul className="space-y-3 text-sm text-muted-foreground">
+              <div className="p-4 sm:p-6 rounded-xl bg-card border border-border text-left mb-6 sm:mb-8">
+                <h3 className="font-display text-base sm:text-lg text-foreground mb-3 sm:mb-4">What happens next?</h3>
+                <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-muted-foreground">
                   <li className="flex items-start gap-3">
                     <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center flex-shrink-0">1</span>
                     <span>You'll receive an order confirmation email shortly</span>
@@ -105,12 +105,12 @@ const Checkout = () => {
                 </ul>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/shop">
-                  <Button variant="outline">Continue Shopping</Button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Link to="/shop" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full text-sm sm:text-base">Continue Shopping</Button>
                 </Link>
-                <Link to="/">
-                  <Button>Back to Home</Button>
+                <Link to="/home" className="w-full sm:w-auto">
+                  <Button className="w-full text-sm sm:text-base">Back to Home</Button>
                 </Link>
               </div>
             </div>
@@ -122,27 +122,27 @@ const Checkout = () => {
 
   return (
     <Layout>
-      <section className="section-padding bg-background">
-        <div className="container-tight px-4">
-          <Link to="/cart" className="inline-flex items-center text-muted-foreground hover:text-primary mb-8">
+      <section className="section-padding bg-background pt-20 sm:pt-24 md:pt-32">
+        <div className="container-tight px-3 sm:px-4">
+          <Link to="/cart" className="inline-flex items-center text-xs sm:text-sm text-muted-foreground hover:text-primary mb-6 sm:mb-8">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Cart
           </Link>
 
-          <h1 className="font-display text-4xl md:text-5xl text-foreground mb-8">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-foreground mb-8">
             CHECK<span className="text-primary">OUT</span>
           </h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
                 {/* Contact Info */}
-                <div className="rounded-xl bg-card border border-border p-6">
-                  <h2 className="font-display text-xl text-foreground mb-4">Contact Information</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-xl bg-card border border-border p-4 sm:p-6">
+                  <h2 className="font-display text-lg sm:text-xl text-foreground mb-4">Contact Information</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+                      <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-foreground mb-1">
                         Full Name *
                       </label>
                       <Input

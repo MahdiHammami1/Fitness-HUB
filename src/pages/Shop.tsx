@@ -44,13 +44,13 @@ const Shop = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="section-padding bg-gradient-to-b from-primary/10 to-background">
-        <div className="container-tight px-4">
+      <section className="section-padding bg-gradient-to-b from-primary/10 to-background pt-20 sm:pt-24 md:pt-32">
+        <div className="container-tight px-3 sm:px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-display text-5xl md:text-7xl text-foreground mb-6">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl text-foreground mb-4 sm:mb-6">
               SHOP <span className="text-primary">GEAR</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground px-2">
               Premium supplements and apparel to fuel your training and represent the grind.
             </p>
           </div>
@@ -58,16 +58,19 @@ const Shop = () => {
       </section>
 
       {/* Filters */}
-      <section className="py-6 bg-card border-b border-border sticky top-16 md:top-20 z-40">
-        <div className="container-tight px-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <Filter className="h-5 w-5 text-muted-foreground" />
-            
-            <div className="flex gap-2">
+      <section className="py-4 sm:py-6 bg-card border-b border-border sticky top-14 sm:top-16 md:top-20 z-40">
+        <div className="container-tight px-3 sm:px-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground">Filter:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant={filter === 'all' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('all')}
+                className="text-xs sm:text-sm"
               >
                 All Products
               </Button>
@@ -75,6 +78,7 @@ const Shop = () => {
                 variant={filter === 'SUPPLEMENTS_GEAR' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('SUPPLEMENTS_GEAR')}
+                className="text-xs sm:text-sm"
               >
                 Supplements & Gear
               </Button>
@@ -82,6 +86,7 @@ const Shop = () => {
                 variant={filter === 'APPAREL' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setFilter('APPAREL')}
+                className="text-xs sm:text-sm"
               >
                 Apparel
               </Button>
@@ -92,11 +97,11 @@ const Shop = () => {
 
       {/* Products Grid */}
       <section className="section-padding bg-background">
-        <div className="container-tight px-4">
+        <div className="container-tight px-3 sm:px-4">
           {loading ? (
             <div className="text-center py-16">
               <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-              <h2 className="font-display text-2xl text-foreground mb-2">Loading products...</h2>
+              <h2 className="font-display text-xl sm:text-2xl text-foreground mb-2">Loading products...</h2>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-16">

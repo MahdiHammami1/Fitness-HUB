@@ -7,6 +7,7 @@ export interface User {
   id: string;
   email: string;
   fullName: string;
+  phone?: string;
   role: UserRole;
   enabled: boolean;
 }
@@ -45,10 +46,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       setLoading(true);
       try {
-        const data = await apiGet('/auth/me');
-        if (data) {
-          // normalize role to uppercase string
-          if (data.role) data.role = String(data.role).toUpperCase();
+        const response = await apiGet('/auth/me');
+        if (response) {
+          // Handle both direct user data and wrapped response
+          const data = response.data || response;
+          
+          // Normalize role to uppercase
+          if (data.role) {
+            data.role = String(data.role).toUpperCase();
+          }
+          
           setUser(data as User);
           try {
             localStorage.setItem('user', JSON.stringify(data));
@@ -71,9 +78,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const refreshUser = async () => {
     setLoading(true);
     try {
-      const data = await apiGet('/auth/me');
-      if (data) {
-        if (data.role) data.role = String(data.role).toUpperCase();
+      const response = await apiGet('/auth/me');
+      if (response) {
+        // Handle both direct user data and wrapped response
+        const data = response.data || response;
+        
+        // Normalize role to uppercase
+        if (data.role) {
+          data.role = String(data.role).toUpperCase();
+        }
+        
         setUser(data as User);
         localStorage.setItem('user', JSON.stringify(data));
       }

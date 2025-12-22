@@ -31,14 +31,14 @@ export const AdminSettings = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-display text-4xl text-foreground mb-2">Settings</h1>
-        <p className="text-muted-foreground">Configure site settings and preferences.</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-2">Settings</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Configure site settings and preferences.</p>
       </div>
 
-      <div className="max-w-2xl space-y-8">
+      <div className="max-w-2xl space-y-6 sm:space-y-8">
         {/* General Settings */}
-        <div className="rounded-xl bg-card border border-border p-6">
-          <h2 className="font-display text-xl text-foreground mb-6">General</h2>
+        <div className="rounded-xl bg-card border border-border p-4 sm:p-6">
+          <h2 className="font-display text-lg sm:text-xl text-foreground mb-6">General</h2>
           
           <div className="space-y-4">
             <div>
@@ -48,6 +48,7 @@ export const AdminSettings = () => {
               <Input
                 value={settings.siteName}
                 onChange={(e) => setSettings(prev => ({ ...prev, siteName: e.target.value }))}
+                className="text-sm"
               />
             </div>
 
@@ -58,6 +59,7 @@ export const AdminSettings = () => {
               <Input
                 value={settings.heroTitle}
                 onChange={(e) => setSettings(prev => ({ ...prev, heroTitle: e.target.value }))}
+                className="text-sm"
               />
             </div>
 
@@ -69,14 +71,15 @@ export const AdminSettings = () => {
                 value={settings.heroSubtitle}
                 onChange={(e) => setSettings(prev => ({ ...prev, heroSubtitle: e.target.value }))}
                 rows={2}
+                className="text-sm"
               />
             </div>
           </div>
         </div>
 
         {/* Contact Settings */}
-        <div className="rounded-xl bg-card border border-border p-6">
-          <h2 className="font-display text-xl text-foreground mb-6">Contact Information</h2>
+        <div className="rounded-xl bg-card border border-border p-4 sm:p-6">
+          <h2 className="font-display text-lg sm:text-xl text-foreground mb-6">Contact Information</h2>
           
           <div className="space-y-4">
             <div>
@@ -87,6 +90,7 @@ export const AdminSettings = () => {
                 type="email"
                 value={settings.contactEmail}
                 onChange={(e) => setSettings(prev => ({ ...prev, contactEmail: e.target.value }))}
+                className="text-sm"
               />
             </div>
 
@@ -97,6 +101,7 @@ export const AdminSettings = () => {
               <Input
                 value={settings.whatsappNumber}
                 onChange={(e) => setSettings(prev => ({ ...prev, whatsappNumber: e.target.value }))}
+                className="text-sm"
               />
             </div>
 
@@ -107,12 +112,13 @@ export const AdminSettings = () => {
               <Input
                 value={settings.instagramHandle}
                 onChange={(e) => setSettings(prev => ({ ...prev, instagramHandle: e.target.value }))}
+                className="text-sm"
               />
             </div>
           </div>
         </div>
 
-        <Button onClick={handleSave} size="lg" disabled={isSaving}>
+        <Button onClick={handleSave} size="lg" disabled={isSaving} className="w-full sm:w-auto">
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>

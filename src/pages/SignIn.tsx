@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import AuthLayout from "@/component/auth/AuthLayout";
 import { AuthInput } from "@/component/ui/auth-input";
@@ -7,15 +7,23 @@ import { Button } from "@/component/ui/button";
 import { Checkbox } from "@/component/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
-import { apiPost, apiGet } from "@/lib/api";
+import { apiPost, apiGet, isAuthenticated } from "@/lib/api";
 
 const SignIn = () => {
   const { toast } = useToast();
   const { setUser } = useUser();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate("/home", { replace: true });
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,71 +37,45 @@ const SignIn = () => {
 
       console.log("SignIn response:", response);
 
-      // Store token only after successful signin
+      // Store token immediately after successful signin
       if (response.token) {
         localStorage.setItem("authToken", response.token);
         console.log("Token stored:", response.token);
       }
 
-      // Extract user ID from response
-      let userId = null;
-      if (response.user?.id) {
-        userId = response.user.id;
-      } else if (response.id) {
-        userId = response.id;
-      } else if (response.data?.user?.id) {
-        userId = response.data.user.id;
+      // Fetch user info using the /auth/me endpoint now that token is stored
+      let userData: any = null;
+      try {
+        console.log("Fetching user info from /auth/me");
+        const userResponse = await apiGet("/auth/me");
+        console.log("User info from backend:", userResponse);
+        
+        if (userResponse) {
+          // Extract user data - handle nested responses
+          userData = userResponse.data || userResponse;
+        }
+      } catch (fetchError) {
+        console.error("Error fetching user info:", fetchError);
+        // If fetch fails, we still have token stored, user can access app
+        // but won't have full user data until next page load
+        userData = null;
       }
 
-      console.log("User ID extracted:", userId);
-
-      // If we have userId, fetch full user info from backend
-      if (userId) {
-        try {
-          console.log("Fetching user data from /users/" + userId);
-          const userResponse = await apiGet(`/users/${userId}`);
-          console.log("User info from backend:", userResponse);
-          
-          if (userResponse) {
-            // Extract user data - handle nested responses
-            const userData = userResponse.data || userResponse;
-            
-            // Ensure role exists and is properly set
-            if (!userData.role) {
-              userData.role = 'CUSTOMER';
-            }
-            
-            // Ensure role is uppercase for proper comparison
-            userData.role = userData.role.toUpperCase();
-            
-            console.log("Final user data with role:", userData);
-            console.log("Role value:", userData.role);
-            console.log("Is ADMIN:", userData.role === 'ADMIN');
-            
-            localStorage.setItem("user", JSON.stringify(userData));
-            setUser(userData);
-          }
-        } catch (fetchError) {
-          console.error("Error fetching user info:", fetchError);
-          // Fall back to response data if fetch fails
-          let userData = response.user || response;
-          if (!userData.role) {
-            userData.role = 'CUSTOMER';
-          }
-          userData.role = userData.role.toUpperCase();
-          console.log("Fallback user data:", userData);
-          localStorage.setItem("user", JSON.stringify(userData));
-          setUser(userData);
-        }
-      } else {
-        // No user ID, use response data
-        console.warn("No user ID found in signin response");
-        let userData = response.user || response;
+      // If we got user data, process and store it
+      if (userData) {
+        // Ensure role exists and is properly set
         if (!userData.role) {
           userData.role = 'CUSTOMER';
         }
+        
+        // Ensure role is uppercase for proper comparison
         userData.role = userData.role.toUpperCase();
-        console.log("Using user data from signin response:", userData);
+        
+        console.log("Final user data with role:", userData);
+        console.log("Role value:", userData.role);
+        console.log("Is ADMIN:", userData.role === 'ADMIN');
+        
+        // Store user data in localStorage AND update context immediately
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
       }
@@ -104,8 +86,8 @@ const SignIn = () => {
       });
 
       setIsLoading(false);
-      // Redirect to home
-      window.location.href = "/home";
+      // Redirect to home using React Router
+      navigate("/home", { replace: true });
     } catch (error: any) {
       setIsLoading(false);
       toast({

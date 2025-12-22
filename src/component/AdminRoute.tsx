@@ -12,7 +12,12 @@ interface AdminRouteProps {
  */
 export const AdminRoute = ({ element }: AdminRouteProps) => {
   const authenticated = isAuthenticated();
-  const { user } = useUser();
+  const { user, loading } = useUser();
+
+  // Still loading user data - show nothing (don't redirect yet)
+  if (loading) {
+    return null;
+  }
 
   // Not authenticated - redirect to sign-in
   if (!authenticated) {

@@ -101,17 +101,17 @@ export const Dashboard = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-display text-4xl text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's what's happening.</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-2">Dashboard</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Welcome back! Here's what's happening.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {stats.map((stat) => (
           <Link
             key={stat.label}
             to={stat.href}
-            className="p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors group"
+            className="p-4 sm:p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors group"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 rounded-lg bg-primary/10">
@@ -119,18 +119,18 @@ export const Dashboard = () => {
               </div>
               <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <p className="font-display text-3xl text-foreground mb-1">{stat.value}</p>
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className="font-display text-2xl sm:text-3xl text-foreground mb-1">{stat.value}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
             <p className="text-xs text-primary mt-2">{stat.change}</p>
           </Link>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         {/* Recent Events */}
-        <div className="rounded-xl bg-card border border-border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-xl text-foreground">Upcoming Events</h2>
+        <div className="rounded-xl bg-card border border-border p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-6 gap-2">
+            <h2 className="font-display text-lg sm:text-xl text-foreground">Upcoming Events</h2>
             <Link to="/admin/events">
               <Button variant="ghost" size="sm">View All</Button>
             </Link>
@@ -138,22 +138,22 @@ export const Dashboard = () => {
           
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading events...</p>
+              <p className="text-sm text-muted-foreground">Loading events...</p>
             </div>
           ) : upcomingEvents.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No upcoming events</p>
+              <p className="text-sm text-muted-foreground">No upcoming events</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {upcomingEvents.slice(0, 3).map((event) => (
-                <div key={event.id} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50">
-                  <div>
-                    <p className="font-medium text-foreground">{event.title}</p>
-                    <p className="text-sm text-muted-foreground">{event.location}</p>
+                <div key={event.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg bg-secondary/50 gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground text-sm sm:text-base">{event.title}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{event.location}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-primary">{event.registrationsCount}/{event.capacity}</p>
+                    <p className="text-xs sm:text-sm text-primary">{event.registrationsCount}/{event.capacity}</p>
                     <p className="text-xs text-muted-foreground">{new Date(event.startAt).toLocaleDateString()}</p>
                   </div>
                 </div>
@@ -163,9 +163,9 @@ export const Dashboard = () => {
         </div>
 
         {/* Recent Orders */}
-        <div className="rounded-xl bg-card border border-border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-xl text-foreground">Recent Orders</h2>
+        <div className="rounded-xl bg-card border border-border p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-6 gap-2">
+            <h2 className="font-display text-lg sm:text-xl text-foreground">Recent Orders</h2>
             <Link to="/admin/shop">
               <Button variant="ghost" size="sm">View All</Button>
             </Link>
@@ -173,24 +173,24 @@ export const Dashboard = () => {
           
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading orders...</p>
+              <p className="text-sm text-muted-foreground">Loading orders...</p>
             </div>
           ) : recentOrders.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No orders yet</p>
+              <p className="text-sm text-muted-foreground">No orders yet</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50">
-                  <div>
-                    <p className="font-medium text-foreground">{order.id}</p>
-                    <p className="text-sm text-muted-foreground">{order.customerName}</p>
+                <div key={order.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg bg-secondary/50 gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground text-sm sm:text-base">{order.id}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{order.customerName}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display text-lg text-primary">${order.total.toFixed(2)}</p>
+                    <p className="font-display text-base sm:text-lg text-primary">${order.total.toFixed(2)}</p>
                     <span className={cn(
-                      'text-xs px-2 py-1 rounded-full',
+                      'text-xs px-2 py-1 rounded-full inline-block',
                       order.status === 'PENDING' && 'bg-yellow-500/20 text-yellow-500',
                       order.status === 'PAID' && 'bg-blue-500/20 text-blue-500',
                       order.status === 'PREPARED' && 'bg-purple-500/20 text-purple-500',
@@ -208,17 +208,17 @@ export const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/10 to-transparent border border-primary/20">
-        <h2 className="font-display text-xl text-foreground mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-4">
+      <div className="mt-8 p-4 sm:p-6 rounded-xl bg-gradient-to-r from-primary/10 to-transparent border border-primary/20">
+        <h2 className="font-display text-lg sm:text-xl text-foreground mb-4">Quick Actions</h2>
+        <div className="flex flex-wrap gap-3">
           <Link to="/admin/events">
-            <Button variant="outline">Create Event</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">Create Event</Button>
           </Link>
           <Link to="/admin/shop">
-            <Button variant="outline">Add Product</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">Add Product</Button>
           </Link>
           <Link to="/admin/shop">
-            <Button variant="outline">View Orders</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">View Orders</Button>
           </Link>
         </div>
       </div>

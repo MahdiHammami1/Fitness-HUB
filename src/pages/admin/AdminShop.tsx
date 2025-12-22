@@ -270,13 +270,13 @@ export const AdminShop = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
         <div>
-          <h1 className="font-display text-4xl text-foreground mb-2">Shop</h1>
-          <p className="text-muted-foreground">Manage products and orders.</p>
+          <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-2">Shop</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage products and orders.</p>
         </div>
         {activeTab === 'products' && (
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>

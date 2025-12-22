@@ -224,22 +224,22 @@ export const AdminEvents = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
         <div>
-          <h1 className="font-display text-4xl text-foreground mb-2">Events</h1>
-          <p className="text-muted-foreground">Manage events and registrations.</p>
+          <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-2">Events</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage events and registrations.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <select
             value={selectedEventId ?? ''}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="px-3 py-2 bg-card border border-border rounded-md"
+            className="px-3 py-2 bg-card border border-border rounded-md text-sm"
           >
             {events.map(ev => (
               <option key={ev.id} value={ev.id}>{ev.title}</option>
             ))}
           </select>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Create Event
           </Button>
@@ -266,55 +266,58 @@ export const AdminEvents = () => {
 
       {/* Events Tab */}
       {activeTab === 'events' && (
-        <div className="grid gap-6">
+        <div className="grid gap-4 md:gap-6">
           {events.map((event) => (
-            <div key={event.id} className="p-6 rounded-xl bg-card border border-border">
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Image placeholder */}
-                <div className="w-full md:w-48 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center flex-shrink-0">
-                  <Calendar className="h-8 w-8 text-primary/50" />
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-display text-xl text-foreground">{event.title}</h3>
-                      <span className={cn(
-                        "text-xs px-2 py-1 rounded-full",
-                        event.status === 'upcoming' && "bg-primary/20 text-primary",
-                        event.status === 'past' && "bg-muted text-muted-foreground"
-                      )}>
-                        {event.status}
-                      </span>
-                    </div>
-                      <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditEvent(event)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteEvent(event.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            <div key={event.id} className="p-4 md:p-6 rounded-xl bg-card border border-border">
+              <div className="flex flex-col gap-4 md:gap-6">
+                {/* Image and Info Row */}
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                  {/* Image placeholder */}
+                  <div className="w-full md:w-48 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center flex-shrink-0">
+                    <Calendar className="h-8 w-8 text-primary/50" />
                   </div>
                   
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      {format(event.startAt, 'MMM d, yyyy h:mm a')}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4 text-primary" />
-                      {event.location}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-4 w-4 text-primary" />
-                      {event.registrationsCount}/{event.capacity}
-                    </span>
-                    {!event.isFree && (
-                      <span className="text-primary font-medium">${event.price}</span>
-                    )}
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-2">
+                      <div>
+                        <h3 className="font-display text-lg md:text-xl text-foreground">{event.title}</h3>
+                        <span className={cn(
+                          "text-xs px-2 py-1 rounded-full inline-block mt-1",
+                          event.status === 'upcoming' && "bg-primary/20 text-primary",
+                          event.status === 'past' && "bg-muted text-muted-foreground"
+                        )}>
+                          {event.status}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => handleEditEvent(event)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteEvent(event.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+                    
+                    <div className="flex flex-wrap gap-3 text-xs sm:text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="truncate">{format(event.startAt, 'MMM d, yyyy h:mm a')}</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="truncate">{event.location}</span>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="h-4 w-4 text-primary flex-shrink-0" />
+                        {event.registrationsCount}/{event.capacity}
+                      </span>
+                      {!event.isFree && (
+                        <span className="text-primary font-medium">${event.price}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -326,17 +329,17 @@ export const AdminEvents = () => {
       {/* Registrations Tab */}
       {activeTab === 'registrations' && (
         <div>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search registrations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 w-full"
               />
             </div>
-            <Button variant="outline" onClick={handleExportCSV}>
+            <Button variant="outline" onClick={handleExportCSV} className="w-full sm:w-auto">
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
@@ -344,13 +347,13 @@ export const AdminEvents = () => {
 
           <div className="rounded-xl border border-border overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-sm">
                 <thead className="bg-card">
                   <tr>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Name</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Contact</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Event</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Date</th>
+                    <th className="text-left p-3 md:p-4 font-medium text-muted-foreground">Name</th>
+                    <th className="text-left p-3 md:p-4 font-medium text-muted-foreground hidden sm:table-cell">Contact</th>
+                    <th className="text-left p-3 md:p-4 font-medium text-muted-foreground hidden md:table-cell">Event</th>
+                    <th className="text-left p-3 md:p-4 font-medium text-muted-foreground">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -358,17 +361,18 @@ export const AdminEvents = () => {
                     const event = events.find(e => e.id === reg.eventId);
                     return (
                       <tr key={reg.id} className="hover:bg-card/50">
-                        <td className="p-4">
-                          <p className="font-medium text-foreground">{reg.name}</p>
+                        <td className="p-3 md:p-4">
+                          <p className="font-medium text-foreground text-sm">{reg.name}</p>
+                          <p className="text-xs text-muted-foreground sm:hidden">{reg.email}</p>
                         </td>
-                        <td className="p-4">
+                        <td className="p-3 md:p-4 hidden sm:table-cell">
                           <p className="text-sm text-foreground">{reg.email}</p>
                           <p className="text-xs text-muted-foreground">{reg.phone}</p>
                         </td>
-                        <td className="p-4">
+                        <td className="p-3 md:p-4 hidden md:table-cell">
                           <span className="text-sm text-primary">{event?.title || 'Unknown'}</span>
                         </td>
-                        <td className="p-4 text-sm text-muted-foreground">{reg.createdAt ? String(reg.createdAt) : ''}</td>
+                        <td className="p-3 md:p-4 text-xs md:text-sm text-muted-foreground">{reg.createdAt ? String(reg.createdAt) : ''}</td>
                       </tr>
                     );
                   })}
@@ -384,10 +388,10 @@ export const AdminEvents = () => {
         setShowCreateModal(open);
         if (!open) setEditingEventId(null);
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{editingEventId ? 'Edit Event' : 'Create New Event'}</DialogTitle>
-            <DialogDescription>{editingEventId ? 'Update event details' : 'Fill in the event details below'}</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl">{editingEventId ? 'Edit Event' : 'Create New Event'}</DialogTitle>
+            <DialogDescription className="text-sm">{editingEventId ? 'Update event details' : 'Fill in the event details below'}</DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleCreateEvent} className="space-y-4">

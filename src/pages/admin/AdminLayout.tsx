@@ -79,7 +79,7 @@ export const AdminLayout = () => {
 
           {/* Footer */}
           <div className="p-4 border-t border-border">
-            <Link to="/">
+            <Link to="/home">
               <Button variant="ghost" className="w-full justify-start gap-3">
                 <LogOut className="h-5 w-5" />
                 Back to Site
@@ -99,7 +99,7 @@ export const AdminLayout = () => {
 
       {/* Main content */}
       <main className="lg:pl-64 pt-16 lg:pt-0 min-h-screen">
-        <div className="p-4 md:p-8">
+        <div className="p-3 sm:p-4 md:p-8 container-tight">
           <Outlet />
         </div>
       </main>

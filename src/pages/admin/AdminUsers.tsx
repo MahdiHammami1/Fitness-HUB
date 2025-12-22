@@ -95,8 +95,8 @@ export const AdminUsers = () => {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-display text-4xl text-foreground mb-2">Users</h1>
-        <p className="text-muted-foreground">Manage registered users and their roles.</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-2">Users</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Manage registered users and their roles.</p>
       </div>
 
       {/* Search Bar */}
@@ -107,7 +107,7 @@ export const AdminUsers = () => {
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 w-full"
           />
         </div>
       </div>
@@ -125,28 +125,29 @@ export const AdminUsers = () => {
           {searchQuery && <p className="text-muted-foreground">Try adjusting your search.</p>}
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="rounded-lg border border-border overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-4 py-3 font-medium text-foreground">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-foreground">Email</th>
-                <th className="text-left px-4 py-3 font-medium text-foreground">Role</th>
-                <th className="text-right px-4 py-3 font-medium text-foreground">Actions</th>
+              <tr className="border-b border-border bg-card">
+                <th className="text-left px-3 md:px-4 py-3 font-medium text-muted-foreground">Name</th>
+                <th className="text-left px-3 md:px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Email</th>
+                <th className="text-left px-3 md:px-4 py-3 font-medium text-muted-foreground">Role</th>
+                <th className="text-right px-3 md:px-4 py-3 font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-foreground">{user.name}</p>
+                <tr key={user.id} className="border-b border-border hover:bg-card/50 transition-colors">
+                  <td className="px-3 md:px-4 py-3">
+                    <p className="font-medium text-foreground text-sm">{user.name}</p>
+                    <p className="text-xs text-muted-foreground sm:hidden">{user.email}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 md:px-4 py-3 hidden sm:table-cell">
                     <p className="text-sm text-muted-foreground">{user.email}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 md:px-4 py-3">
                     <span className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium",
+                      "px-2 md:px-3 py-1 rounded-full text-xs font-medium inline-block",
                       user.role === 'ADMIN' && "bg-red-500/20 text-red-500",
                       user.role === 'COACH' && "bg-blue-500/20 text-blue-500",
                       user.role === 'CUSTOMER' && "bg-green-500/20 text-green-500"
@@ -154,11 +155,12 @@ export const AdminUsers = () => {
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-2">
+                  <td className="px-3 md:px-4 py-3">
+                    <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="h-8 w-8 p-0"
                         onClick={() => handleEditRole(user)}
                       >
                         <Edit className="h-4 w-4" />
@@ -166,6 +168,7 @@ export const AdminUsers = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="h-8 w-8 p-0"
                         onClick={() => handleDeleteUser(user.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -181,17 +184,17 @@ export const AdminUsers = () => {
 
       {/* Edit Role Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] sm:max-w-md rounded-lg p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>Edit User Role</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg">Edit User Role</DialogTitle>
+            <DialogDescription className="text-sm">
               Update the role for {selectedUser?.name}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm">Email</Label>
               <Input
                 id="email"
                 value={selectedUser?.email || ''}
@@ -201,12 +204,12 @@ export const AdminUsers = () => {
             </div>
 
             <div>
-              <Label htmlFor="role">Role *</Label>
+              <Label htmlFor="role" className="text-sm">Role *</Label>
               <select
                 id="role"
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value as 'ADMIN' | 'COACH' | 'CUSTOMER')}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
               >
                 <option value="CUSTOMER">Customer</option>
                 <option value="COACH">Coach</option>
@@ -214,18 +217,18 @@ export const AdminUsers = () => {
               </select>
             </div>
 
-            <div className="flex gap-2 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 pt-4">
               <Button
                 onClick={handleUpdateRole}
                 disabled={updatingRole}
-                className="flex-1"
+                className="w-full"
               >
                 {updatingRole ? 'Updating...' : 'Update Role'}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowEditModal(false)}
-                className="flex-1"
+                className="w-full"
               >
                 Cancel
               </Button>

@@ -11,9 +11,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link to="/" className="inline-block mb-4">
+            <Link to="/home" className="inline-block mb-4">
               <span className="font-display text-3xl text-foreground tracking-wider">
-                {settings.siteName.split('HUB')[0]}HUB<span className="text-primary">{settings.siteName.includes('HUB') ? '' : settings.siteName}</span>
+                {settings.siteName.split(' ')[0]}<span className="text-primary"> {settings.siteName.split(' ').slice(1).join(' ')}</span>
               </span>
             </Link>
             <p className="text-muted-foreground mb-6 max-w-sm">
